@@ -1,464 +1,79 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    const $ = id => document.getElementById(id);
-
-    // -----------------------------
-    // Slider values
-    // -----------------------------
-    [["temp", "tempOut"],
-     ["atemp", "atempOut"],
-     ["hum", "humOut"],
-     ["windspeed", "windOut"]].forEach(([inputId, outputId]) => {
-
-        const input = $(inputId);
-        const output = $(outputId);
-
-        if (input && output) {
-            const update = () => {
-                output.textContent = Number(input.value).toFixed(2);
-            };
-
-            input.addEventListener("input", update);
-            update();
-        }
-    });
-
-
-    // -----------------------------
-    // PREDICTION
-    // -----------------------------
-    $("predictionForm").addEventListener("submit", async (e) => {
-
-        e.preventDefault();
-
-        const button = document.querySelector(".predict-btn");
-        const error = $("error");
-
-        error.textContent = "";
-
-        button.disabled = true;
-        button.innerHTML = "<span>⏳</span> Predicting...";
-
-        const payload = {
-            year: Number($("year").value),
-            season: Number($("season").value),
-            month: Number($("month").value),
-            hour: Number($("hour").value),
-            weekday: Number($("weekday").value),
-            holiday: Number($("holiday").value),
-            workingday: Number($("workingday").value),
-            weathersit: Number($("weathersit").value),
-            temp: Number($("temp").value),
-            atemp: Number($("atemp").value),
-            hum: Number($("hum").value),
-            windspeed: Number($("windspeed").value)
-        };
-
-        console.log("Sending:", payload);
-
-        try {
-
-            const response = await fetch("/predict", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-
-            console.log("Prediction:", data);
-
-            if (!response.ok) {
-                throw new Error(data.error || "Prediction failed");
-            }
-
-            $("demand").textContent =
-                Number(data.predicted_demand).toLocaleString();
-
-            $("heroDemand").textContent =
-                Number(data.predicted_demand).toLocaleString();
-
-            $("profile").textContent =
-                data.demand_profile;
-
-            $("cluster").textContent =
-                data.cluster_number;
-
-            $("recommendation").textContent =
-                data.recommendation;
-
-            $("resultPanel").scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-        } catch (err) {
-
-            console.error(err);
-
-            error.textContent =
-                "Prediction Error: " + err.message;
-
-        } finally {
-
-            button.disabled = false;
-
-            button.innerHTML =
-                "<span>⚡</span> Predict Bicycle Demand";
-        }
-    });
-
-
-    // -----------------------------
-    // ANALYTICS
-    // -----------------------------
-    async function loadAnalytics() {
-
-        try {
-
-            const response =
-                await fetch("/api/analytics");
-
-            const data =
-                await response.json();
-
-            console.log("Analytics:", data);
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || "Analytics failed"
-                );
-            }
-
-            drawChart(
-                "hourChart",
-                data.hourly_demand,
-                "hr",
-                "hour"
-            );
-
-            drawChart(
-                "monthChart",
-                data.monthly_demand,
-                "mnth",
-                "month"
-            );
-
-            drawChart(
-                "weekdayChart",
-                data.weekday_demand,
-                "weekday",
-                "weekday"
-            );
-
-            drawChart(
-                "weatherChart",
-                data.weather_demand,
-                "weathersit",
-                "weather"
-            );
-
-        } catch (err) {
-
-            console.error(
-                "Analytics Error:",
-                err
-            );
-        }
-    }
-
-
-    // -----------------------------
-    // DRAW CHART
-    // -----------------------------
-    function drawChart(
-        canvasId,
-        data,
-        key,
-        type
-    ) {
-
-        const canvas = $(canvasId);
-
-        if (!canvas || !data || data.length === 0) {
-            console.error(
-                "No chart data:",
-                canvasId
-            );
-            return;
-        }
-
-        const width =
-            Math.max(
-                canvas.parentElement.clientWidth - 30,
-                300
-            );
-
-        const height = 260;
-
-        const dpr =
-            window.devicePixelRatio || 1;
-
-        canvas.width =
-            width * dpr;
-
-        canvas.height =
-            height * dpr;
-
-        canvas.style.width =
-            width + "px";
-
-        canvas.style.height =
-            height + "px";
-
-        const ctx =
-            canvas.getContext("2d");
-
-        ctx.setTransform(
-            dpr,
-            0,
-            0,
-            dpr,
-            0,
-            0
-        );
-
-        ctx.clearRect(
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        const values =
-            data.map(
-                item => Number(item.cnt) || 0
-            );
-
-        const labels =
-            data.map(
-                item => item[key]
-            );
-
-        const max =
-            Math.max(...values, 1);
-
-
-        const left = 42;
-        const right = 10;
-        const top = 15;
-        const bottom = 45;
-
-        const chartWidth =
-            width - left - right;
-
-        const chartHeight =
-            height - top - bottom;
-
-
-        // Grid
-
-        ctx.strokeStyle =
-            "rgba(255,255,255,0.10)";
-
-        for (let i = 0; i <= 4; i++) {
-
-            const y =
-                top +
-                chartHeight -
-                (i / 4) * chartHeight;
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                left,
-                y
-            );
-
-            ctx.lineTo(
-                width - right,
-                y
-            );
-
-            ctx.stroke();
-        }
-
-
-        // Y labels
-
-        ctx.fillStyle =
-            "rgba(220,235,235,0.65)";
-
-        ctx.font =
-            "10px Arial";
-
-        ctx.textAlign =
-            "right";
-
-        for (let i = 0; i <= 4; i++) {
-
-            const y =
-                top +
-                chartHeight -
-                (i / 4) * chartHeight;
-
-            ctx.fillText(
-                Math.round(max * i / 4),
-                left - 6,
-                y + 3
-            );
-        }
-
-
-        // Bars
-
-        const spacing =
-            chartWidth / values.length;
-
-        const barWidth =
-            Math.max(
-                4,
-                spacing * 0.65
-            );
-
-
-        values.forEach(
-            (value, index) => {
-
-                const barHeight =
-                    value / max *
-                    chartHeight;
-
-                const x =
-                    left +
-                    index * spacing +
-                    (spacing - barWidth) / 2;
-
-                const y =
-                    top +
-                    chartHeight -
-                    barHeight;
-
-
-                ctx.fillStyle =
-                    "#24d6a3";
-
-                ctx.fillRect(
-                    x,
-                    y,
-                    barWidth,
-                    barHeight
-                );
-
-
-                // Label
-
-                let label =
-                    labels[index];
-
-
-                if (type === "month") {
-
-                    const months = [
-                        "Jan", "Feb", "Mar",
-                        "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep",
-                        "Oct", "Nov", "Dec"
-                    ];
-
-                    label =
-                        months[
-                            Number(label) - 1
-                        ];
-                }
-
-
-                if (type === "weekday") {
-
-                    const days = [
-                        "Sun", "Mon", "Tue",
-                        "Wed", "Thu", "Fri",
-                        "Sat"
-                    ];
-
-                    label =
-                        days[
-                            Number(label)
-                        ];
-                }
-
-
-                if (type === "weather") {
-
-                    const weather = [
-                        "Clear",
-                        "Mist",
-                        "Rain",
-                        "Heavy"
-                    ];
-
-                    label =
-                        weather[
-                            Number(label) - 1
-                        ];
-                }
-
-
-                const step =
-                    Math.max(
-                        1,
-                        Math.ceil(
-                            values.length / 12
-                        )
-                    );
-
-
-                if (index % step === 0) {
-
-                    ctx.save();
-
-                    ctx.fillStyle =
-                        "rgba(220,235,235,0.65)";
-
-                    ctx.font =
-                        "10px Arial";
-
-                    ctx.textAlign =
-                        "right";
-
-                    ctx.translate(
-                        x + barWidth / 2,
-                        height - 8
-                    );
-
-                    ctx.rotate(
-                        -Math.PI / 5
-                    );
-
-                    ctx.fillText(
-                        label,
-                        0,
-                        0
-                    );
-
-                    ctx.restore();
-                }
-            }
-        );
-    }
-
-
-    // Start analytics
-    loadAnalytics();
-
-
-    // Redraw when window size changes
-    window.addEventListener(
-        "resize",
-        loadAnalytics
-    );
-
+const $ = (s) => document.querySelector(s);
+
+const hourSelect = document.querySelector('select[name="hour"]');
+for (let h = 0; h < 24; h++) {
+  const option = document.createElement('option');
+  option.value = h;
+  option.textContent = `${String(h).padStart(2,'0')}:00`;
+  if (h === 17) option.selected = true;
+  hourSelect.appendChild(option);
+}
+
+function formPayload(form) {
+  const data = Object.fromEntries(new FormData(form).entries());
+  return {
+    year: Number(data.year), season: Number(data.season), month: Number(data.month), hour: Number(data.hour),
+    holiday: Number(data.holiday), weekday: Number(data.weekday), workingday: Number(data.workingday), weathersit: Number(data.weathersit),
+    temp: Number(data.temp), atemp: Number(data.atemp), hum: Number(data.hum), windspeed: Number(data.windspeed)
+  };
+}
+
+$('#forecastForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const status = $('#formStatus');
+  status.textContent = 'Calculating…';
+  $('#resultBadge').textContent = 'RUNNING';
+  try {
+    const response = await fetch('/predict', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(formPayload(event.target))});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.detail || 'Prediction failed');
+    $('#predictedDemand').textContent = Number(result.predicted_demand).toLocaleString();
+    $('#profileValue').textContent = result.demand_profile;
+    $('#recommendationValue').textContent = result.recommendation;
+    $('#resultProfile').textContent = result.demand_profile === 'High Demand' ? 'The selected conditions point to a busy period. Consider increasing availability.' : result.demand_profile === 'Low Demand' ? 'The selected conditions point to a quieter period.' : 'The selected conditions sit in the normal operating range.';
+    $('#resultBadge').textContent = 'COMPLETE';
+    $('#heroDemand').textContent = Number(result.predicted_demand).toLocaleString();
+    $('#heroProfile').textContent = result.demand_profile;
+    status.textContent = 'Forecast updated just now.';
+  } catch (error) {
+    $('#resultBadge').textContent = 'ERROR';
+    status.textContent = error.message;
+  }
 });
+
+function maxValue(items, key) { return Math.max(...items.map(x => Number(x[key]) || 0), 1); }
+function renderHourChart(items) {
+  const el = $('#hourChart'); const max = maxValue(items,'cnt'); el.innerHTML='';
+  items.forEach(item => { const bar=document.createElement('div'); bar.className='bar'; bar.style.height=`${Math.max(4,(Number(item.cnt)/max)*100)}%`; bar.title=`${item.hr}:00 — ${Math.round(item.cnt)} bikes`; bar.innerHTML=`<span class="bar-label">${item.hr}</span>`; el.appendChild(bar); });
+}
+function renderMiniBars(el, items, labelFn) {
+  const max=maxValue(items,'cnt'); el.innerHTML='';
+  items.forEach(item=>{const row=document.createElement('div');row.className='mini-row';row.innerHTML=`<span>${labelFn(item)}</span><span class="mini-track"><span class="mini-fill" style="width:${(Number(item.cnt)/max)*100}%"></span></span><span class="mini-value">${Math.round(item.cnt)}</span>`;el.appendChild(row);});
+}
+
+async function loadAnalytics(){
+  try{
+    const response=await fetch('/api/analytics');
+    const data=await response.json();
+    renderHourChart(data.hourly_demand || []);
+    const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    renderMiniBars($('#weekdayChart'), data.weekday_demand || [], x=>weekdays[x.weekday] ?? x.weekday);
+    const weather=['Clear','Mist','Rain','Storm'];
+    renderMiniBars($('#weatherChart'), data.weather_demand || [], x=>weather[(x.weathersit||1)-1] ?? x.weathersit);
+  }catch(error){
+    $('#hourChart').innerHTML='<p style="color:#8b9087;font-size:12px">Analytics unavailable.</p>';
+  }
+}
+
+const themeBtn = $('#themeBtn');
+function applyTheme(theme){
+  document.body.classList.toggle('theme-dark', theme === 'dark');
+  themeBtn.textContent = theme === 'dark' ? '☀' : '◐';
+  themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  localStorage.setItem('rideflow-theme', theme);
+}
+applyTheme(localStorage.getItem('rideflow-theme') || 'light');
+themeBtn.addEventListener('click',()=>{
+  applyTheme(document.body.classList.contains('theme-dark') ? 'light' : 'dark');
+});
+loadAnalytics();

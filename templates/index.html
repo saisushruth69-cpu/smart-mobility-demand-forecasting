@@ -1,174 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Mobility | AI Bicycle Demand</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RideFlow — Bicycle Demand Planning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <div class="bg-glow glow-one"></div>
-    <div class="bg-glow glow-two"></div>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="RideFlow home">
+      <span class="brand-mark">R</span>
+      <span>RideFlow.</span>
+    </a>
+    <nav class="main-nav">
+      <a href="#home">Overview</a>
+      <a href="#forecast">Forecast</a>
+      <a href="#insights">Insights</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="header-actions">
+      <span class="live-dot"><i></i> Model online</span>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
 
-    <header class="navbar">
-        <a class="brand" href="#">
-            <span class="brand-icon">🚲</span>
-            <span>Smart<span>Mobility</span></span>
-        </a>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#predict">Prediction</a>
-            <a href="#analytics">Analytics</a>
-            <a href="#about">About</a>
-        </nav>
-        <div class="ai-pill"><span></span> AI Powered</div>
-    </header>
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">BICYCLE DEMAND PLANNING</p>
+        <h1>Put the right<br><em>number of bikes</em><br>in the right place.</h1>
+        <p class="hero-text">A practical demand forecasting tool for planning bicycle availability around changing hours, weather and travel patterns.</p>
+        <div class="hero-actions">
+          <a class="btn btn-dark" href="#forecast">Run a forecast <span>→</span></a>
+          <a class="text-link" href="#insights">See demand trends</a>
+        </div>
+      </div>
 
-    <main>
-        <section class="hero" id="home">
-            <div class="hero-copy">
-                <div class="eyebrow"><span>✦</span> INTELLIGENT URBAN TRANSPORTATION</div>
-                <h1>Predict demand.<br><em>Move smarter.</em></h1>
-                <p>AI-powered bicycle demand forecasting that helps cities optimize bicycle availability and build smarter, more sustainable mobility.</p>
-                <div class="hero-actions">
-                    <a href="#predict" class="primary-btn">Start Prediction <b>→</b></a>
-                    <a href="#analytics" class="secondary-btn">View Analytics</a>
-                </div>
-                <div class="hero-stats">
-                    <div><strong>AI</strong><small>Demand Forecasting</small></div>
-                    <div><strong>24/7</strong><small>Smart Insights</small></div>
-                    <div><strong>4+</strong><small>Analytics Views</small></div>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="orbit orbit-a"></div>
-                <div class="orbit orbit-b"></div>
-                <div class="city-card">
-                    <div class="city-top"><span>LIVE MOBILITY</span><b>● ONLINE</b></div>
-                    <div class="bike-art">🚲</div>
-                    <div class="road"></div>
-                    <div class="city-lights">
-                        <i></i><i></i><i></i><i></i><i></i><i></i>
-                    </div>
-                </div>
-                <div class="floating-card fc-demand">
-                    <span>Predicted Demand</span><strong id="heroDemand">—</strong><small>bikes</small>
-                </div>
-                <div class="floating-card fc-ai">⚡ ML MODEL<br><small>READY TO PREDICT</small></div>
-            </div>
-        </section>
+      <div class="hero-stage">
+        <div class="stage-label">TODAY'S OUTLOOK</div>
+        <div class="stage-number"><span id="heroDemand">—</span><small> bikes</small></div>
+        <div class="stage-caption">Average predicted demand</div>
+        <div class="road-lines"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="bike-photo-wrap" aria-hidden="true">
+          <img class="bike-photo" src="/static/bicycle.svg" alt="Bicycle" />
+        </div>
+        <div class="stage-note"><strong>Demand profile</strong><span id="heroProfile">Waiting for forecast</span></div>
+      </div>
+    </section>
 
-        <section class="section" id="predict">
-            <div class="section-heading">
-                <div>
-                    <span class="section-tag">01 / PREDICTION</span>
-                    <h2>Forecast bicycle demand</h2>
-                    <p>Enter the environmental and temporal conditions to generate an AI-based demand prediction.</p>
-                </div>
-                <div class="model-badge">🤖 Random Forest Model</div>
-            </div>
+    <section class="quick-strip">
+      <div><span class="strip-label">Forecasting</span><strong>Machine-learning model</strong></div>
+      <div><span class="strip-label">Planning inputs</span><strong>Time · weather · calendar</strong></div>
+      <div><span class="strip-label">Decision support</span><strong>Availability recommendation</strong></div>
+    </section>
 
-            <div class="dashboard-grid">
-                <form id="predictionForm" class="glass-panel prediction-form">
-                    <div class="panel-title"><span>Prediction Inputs</span><small>All fields required</small></div>
+    <section class="forecast-section section" id="forecast">
+      <div class="section-heading">
+        <div><p class="eyebrow">FORECAST</p><h2>Plan for a specific hour.</h2></div>
+        <p>Enter the conditions you want to test. The model returns expected bicycle demand and a simple availability recommendation.</p>
+      </div>
 
-                    <div class="input-grid">
-                        <label>Year
-                            <select id="year"><option value="2011">2011</option><option value="2012">2012</option></select>
-                        </label>
-                        <label>Season
-                            <select id="season"><option value="1">Spring</option><option value="2">Summer</option><option value="3">Fall</option><option value="4">Winter</option></select>
-                        </label>
-                        <label>Month
-                            <select id="month">
-                                <option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option>
-                                <option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option>
-                                <option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
-                            </select>
-                        </label>
-                        <label>Hour
-                            <input id="hour" type="number" min="0" max="23" value="8">
-                        </label>
-                        <label>Weekday
-                            <select id="weekday">
-                                <option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option>
-                                <option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option>
-                            </select>
-                        </label>
-                        <label>Weather
-                            <select id="weathersit"><option value="1">Clear / Few clouds</option><option value="2">Mist / Cloudy</option><option value="3">Light Rain / Snow</option><option value="4">Heavy Rain / Snow</option></select>
-                        </label>
-                        <label>Holiday
-                            <select id="holiday"><option value="0">No</option><option value="1">Yes</option></select>
-                        </label>
-                        <label>Working Day
-                            <select id="workingday"><option value="1">Yes</option><option value="0">No</option></select>
-                        </label>
-                    </div>
+      <div class="forecast-layout">
+        <form id="forecastForm" class="forecast-form">
+          <div class="form-row three">
+            <label>Year<select name="year"><option value="2011">2011</option><option value="2012" selected>2012</option></select></label>
+            <label>Month<select name="month"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12" selected>December</option></select></label>
+            <label>Hour<select name="hour"></select></label>
+          </div>
+          <div class="form-row three">
+            <label>Season<select name="season"><option value="1">Spring</option><option value="2">Summer</option><option value="3" selected>Fall</option><option value="4">Winter</option></select></label>
+            <label>Weekday<select name="weekday"><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6" selected>Saturday</option></select></label>
+            <label>Weather<select name="weathersit"><option value="1">Clear</option><option value="2">Mist / cloudy</option><option value="3">Light rain / snow</option><option value="4">Heavy rain / storm</option></select></label>
+          </div>
+          <div class="form-row four">
+            <label>Holiday<select name="holiday"><option value="0" selected>No</option><option value="1">Yes</option></select></label>
+            <label>Working day<select name="workingday"><option value="1" selected>Yes</option><option value="0">No</option></select></label>
+            <label>Temperature<input name="temp" type="number" min="0" max="1" step="0.01" value="0.50" /></label>
+            <label>Feels like<input name="atemp" type="number" min="0" max="1" step="0.01" value="0.50" /></label>
+          </div>
+          <div class="form-row two">
+            <label>Humidity<input name="hum" type="number" min="0" max="1" step="0.01" value="0.55" /></label>
+            <label>Wind speed<input name="windspeed" type="number" min="0" max="1" step="0.01" value="0.20" /></label>
+          </div>
+          <button class="btn btn-green submit-btn" type="submit"><span>Calculate demand</span><span>→</span></button>
+          <p class="form-status" id="formStatus">Ready.</p>
+        </form>
 
-                    <div class="slider-grid">
-                        <label>Temperature <output id="tempOut">0.50</output>
-                            <input id="temp" type="range" min="0" max="1" step="0.01" value="0.50">
-                        </label>
-                        <label>Feels Like <output id="atempOut">0.50</output>
-                            <input id="atemp" type="range" min="0" max="1" step="0.01" value="0.50">
-                        </label>
-                        <label>Humidity <output id="humOut">0.50</output>
-                            <input id="hum" type="range" min="0" max="1" step="0.01" value="0.50">
-                        </label>
-                        <label>Wind Speed <output id="windOut">0.20</output>
-                            <input id="windspeed" type="range" min="0" max="1" step="0.01" value="0.20">
-                        </label>
-                    </div>
+        <aside class="result-card" id="resultCard">
+          <div class="result-top"><span>FORECAST RESULT</span><span id="resultBadge">READY</span></div>
+          <div class="result-number"><span id="predictedDemand">—</span><small> bicycles</small></div>
+          <p id="resultProfile">Run a forecast to see the model output.</p>
+          <div class="result-divider"></div>
+          <div class="result-line"><span>Demand profile</span><strong id="profileValue">—</strong></div>
+          <div class="result-line"><span>Recommended action</span><strong id="recommendationValue">—</strong></div>
+        </aside>
+      </div>
+    </section>
 
-                    <button class="predict-btn" type="submit"><span>⚡</span> Predict Bicycle Demand</button>
-                    <div id="error" class="error"></div>
-                </form>
+    <section class="insights section" id="insights">
+      <div class="section-heading">
+        <div><p class="eyebrow">INSIGHTS</p><h2>What demand looks like.</h2></div>
+        <p>These charts are calculated from the dataset already connected to your project.</p>
+      </div>
+      <div class="insight-grid">
+        <article class="chart-card large"><div class="card-head"><div><span>HOURLY</span><h3>Average demand by hour</h3></div><span class="card-unit">bikes</span></div><div id="hourChart" class="bar-chart"></div></article>
+        <article class="chart-card"><div class="card-head"><div><span>WEEKDAY</span><h3>Average demand</h3></div></div><div id="weekdayChart" class="mini-bars"></div></article>
+        <article class="chart-card"><div class="card-head"><div><span>WEATHER</span><h3>Demand by condition</h3></div></div><div id="weatherChart" class="mini-bars"></div></article>
+      </div>
+    </section>
 
-                <div class="glass-panel result-panel" id="resultPanel">
-                    <div class="panel-title"><span>AI Prediction</span><span class="status-dot">● MODEL READY</span></div>
-                    <div class="result-number"><span id="demand">—</span><small>bikes</small></div>
-                    <div class="result-label">Predicted Bicycle Demand</div>
+    <section class="about section" id="about">
+      <div class="about-number">01</div>
+      <div><p class="eyebrow">ABOUT</p><h2>Forecast demand.<br>Plan availability.</h2></div>
+      <div class="about-copy"><p>The system uses historical bicycle usage data and an ML demand model to estimate how many bikes are likely to be needed for a given set of conditions.</p><p>A clustering layer adds a demand profile and translates the prediction into an operational availability recommendation.</p></div>
+    </section>
+  </main>
 
-                    <div class="result-cards">
-                        <div class="result-card"><span>Demand Profile</span><strong id="profile">—</strong></div>
-                        <div class="result-card"><span>Cluster</span><strong id="cluster">—</strong></div>
-                    </div>
-                    <div class="recommendation">
-                        <span>💡</span>
-                        <div><small>SMART RECOMMENDATION</small><strong id="recommendation">Run a prediction to see the recommendation.</strong></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" id="analytics">
-            <div class="section-heading">
-                <div>
-                    <span class="section-tag">02 / ANALYTICS</span>
-                    <h2>Mobility insights</h2>
-                    <p>Explore demand patterns across time, weekdays, months and weather conditions.</p>
-                </div>
-            </div>
-            <div class="analytics-grid">
-                <div class="glass-panel chart-card"><div class="chart-title">Hourly Demand <span>24H</span></div><canvas id="hourChart"></canvas></div>
-                <div class="glass-panel chart-card"><div class="chart-title">Monthly Demand <span>12M</span></div><canvas id="monthChart"></canvas></div>
-                <div class="glass-panel chart-card"><div class="chart-title">Weekday Demand <span>7D</span></div><canvas id="weekdayChart"></canvas></div>
-                <div class="glass-panel chart-card"><div class="chart-title">Weather Demand <span>4 TYPES</span></div><canvas id="weatherChart"></canvas></div>
-            </div>
-        </section>
-
-        <section class="about" id="about">
-            <div class="about-inner">
-                <div><span class="section-tag">03 / ABOUT</span><h2>Smarter mobility starts with better predictions.</h2></div>
-                <p>This system uses machine learning to estimate bicycle demand from time, weather and working-day conditions. The prediction can support bicycle allocation and urban mobility planning.</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>SMART MOBILITY <span>•</span> AI Bicycle Demand Forecasting</footer>
-    <script src="/static/script.js"></script>
+  <footer><span>RideFlow. Bicycle demand planning</span></footer>
+  <script src="/static/script.js"></script>
 </body>
 </html>
